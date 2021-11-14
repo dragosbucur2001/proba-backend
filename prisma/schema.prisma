@@ -15,16 +15,91 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  email       String  @unique
-  username    String
-  password    String
-  role        Role    @default(USER)
-  is_verified Boolean @default(true)
+  email        String @unique
+  firstname    String
+  lastname     String
+  password     String
+  id_card_path String
+  role         Role   @relation(fields: [role_id], references: [id])
+  role_id      Int
 
+  reviews        Review[]
+  TutorinClasses TutoringClass[]
+  Enrollment     Enrollment[]
   @@map("users")
 }
 
-enum Role {
-  USER
-  ADMIN
+model Role {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  title String @unique
+
+  users User[]
+  @@map("roles")
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  message    String @unique
+  student    User   @relation(fields: [student_id], references: [id])
+  student_id Int
+
+  @@map("reviews")
+}
+
+model Subject {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  title String @unique
+
+  TutorinClasses TutoringClass[]
+  @@map("subjects")
+}
+
+model ContactRequest {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  name        String
+  email       String
+  message     String  @db.Text
+  is_resolved Boolean
+
+  @@map("contact_requests")
+}
+
+model TutoringClass {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  description String
+  teacher     User    @relation(fields: [teacher_id], references: [id])
+  teacher_id  Int
+  subject     Subject @relation(fields: [subject_id], references: [id])
+  subject_id  Int
+
+  Enrollment Enrollment[]
+  @@map("tutoring_classes")
+}
+
+model Enrollment {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  student           User          @relation(fields: [student_id], references: [id])
+  student_id        Int
+  tutoringClass     TutoringClass @relation(fields: [tutoring_class_id], references: [id])
+  tutoring_class_id Int
+
+  @@map("enrollments")
 }
