@@ -1,7 +1,7 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as helmet from 'helmet';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 
 async function bootstrap() {
@@ -13,6 +13,7 @@ async function bootstrap() {
     whitelist: true,
     transform: true,
   }));
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 

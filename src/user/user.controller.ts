@@ -1,35 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '.prisma/client';
+import { ResponseUserDto } from './dto/response-user.dto';
 
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Get()
-  findAll(): Promise<User[]> {
-    return this.userService.findAll();
+  async findAll(): Promise<ResponseUserDto[]> {
+    return (await this.userService.findAll()).map(e => new ResponseUserDto(e));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<User> {
-    return this.userService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<ResponseUserDto> {
+    return new ResponseUserDto(await this.userService.findOne(id));
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): any {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
+    return new ResponseUserDto(await this.userService.create(createUserDto));
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto
+  ): Promise<ResponseUserDto> {
+    return new ResponseUserDto(await this.userService.update(id, updateUserDto));
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.userService.remove(id);
+  async remove(@Param('id') id: number): Promise<ResponseUserDto> {
+    return new ResponseUserDto(await this.userService.remove(id));
   }
 }
