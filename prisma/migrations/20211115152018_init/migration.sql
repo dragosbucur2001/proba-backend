@@ -7,7 +7,7 @@ CREATE TABLE `users` (
     `firstname` VARCHAR(191) NOT NULL,
     `lastname` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
-    `id_card_path` VARCHAR(191) NOT NULL,
+    `id_card_path` VARCHAR(191) NULL,
     `role_id` INTEGER NOT NULL,
 
     UNIQUE INDEX `users_email_key`(`email`),
@@ -30,10 +30,9 @@ CREATE TABLE `reviews` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
-    `message` VARCHAR(191) NOT NULL,
-    `student_id` INTEGER NOT NULL,
+    `message` VARCHAR(1000) NOT NULL,
+    `user_id` INTEGER NOT NULL,
 
-    UNIQUE INDEX `reviews_message_key`(`message`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -88,7 +87,7 @@ CREATE TABLE `enrollments` (
 ALTER TABLE `users` ADD CONSTRAINT `users_role_id_fkey` FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `reviews` ADD CONSTRAINT `reviews_student_id_fkey` FOREIGN KEY (`student_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `reviews` ADD CONSTRAINT `reviews_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `tutoring_classes` ADD CONSTRAINT `tutoring_classes_teacher_id_fkey` FOREIGN KEY (`teacher_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

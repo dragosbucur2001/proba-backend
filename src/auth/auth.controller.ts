@@ -16,6 +16,7 @@ export class AuthController {
     }
 
     @Post('register/:title')
+    @Auth()
     async register(
         @Body() createUserDto: CreateUserDto,
         @Param('title', new ParseEnumPipe(Role)) title: Role

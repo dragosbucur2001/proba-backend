@@ -45,9 +45,9 @@ model Review {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  message    String @unique
-  student    User   @relation(fields: [student_id], references: [id])
-  student_id Int
+  message String @db.VarChar(1000)
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id Int
 
   @@map("reviews")
 }
