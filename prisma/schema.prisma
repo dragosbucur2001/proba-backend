@@ -81,7 +81,7 @@ model TutoringClass {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  description String
+  description String  @db.VarChar(500)
   teacher     User    @relation(fields: [teacher_id], references: [id])
   teacher_id  Int
   subject     Subject @relation(fields: [subject_id], references: [id])
