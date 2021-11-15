@@ -65,6 +65,19 @@ export class TutoringClassService {
     });
   }
 
+  async enroll(id: number, user) {
+    let tutoringClass = await this.prisma.tutoringClass.findUnique({ where: { id } });
+    if (!tutoringClass)
+      throw new HttpException("Tutoring class does not exist", HttpStatus.NOT_FOUND);
+
+    return this.prisma.enrollment.create({
+      data: {
+        tutoring_class_id: id,
+        student_id: user.id,
+      },
+    });
+  }
+
   async update(id: number, updateTutoringClassDto: UpdateTutoringClassDto, user) {
     let match = await this.prisma.tutoringClass.count({ where: { id, teacher_id: user.id } });
 

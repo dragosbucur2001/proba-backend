@@ -7,9 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { ReviewModule } from './review/review.module';
 import { SubjectModule } from './subject/subject.module';
 import { TutoringClassModule } from './tutoring-class/tutoring-class.module';
+import { ContactRequestsModule } from './contact-requests/contact-requests.module';
 
 @Module({
-  imports: [UserModule, PrismaModule, AuthModule, ReviewModule, SubjectModule, TutoringClassModule],
+  imports: [UserModule, PrismaModule, AuthModule, ReviewModule, SubjectModule, TutoringClassModule, ContactRequestsModule],
   controllers: [],
   providers: [ExistsConstraint, UniqueConstraint],
   exports: [ExistsConstraint, UniqueConstraint],

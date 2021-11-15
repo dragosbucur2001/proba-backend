@@ -71,7 +71,7 @@ model ContactRequest {
   name        String
   email       String
   message     String  @db.Text
-  is_resolved Boolean
+  is_resolved Boolean @default(false)
 
   @@map("contact_requests")
 }
