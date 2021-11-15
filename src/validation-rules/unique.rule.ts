@@ -3,7 +3,7 @@ import { ClassConstructor } from "class-transformer";
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { PrismaService } from "src/prisma/prisma.service";
 
-export const Exists = <T>(
+export const Unique = <T>(
     type: ClassConstructor<T>,
     property: (o: T) => any,
     validationOptions?: ValidationOptions,
@@ -14,14 +14,14 @@ export const Exists = <T>(
             propertyName,
             options: validationOptions,
             constraints: [property, type],
-            validator: ExistsConstraint,
+            validator: UniqueConstraint,
         });
     };
 };
 
-@ValidatorConstraint({ name: "Exists", async: true })
+@ValidatorConstraint({ name: "Unique", async: true })
 @Injectable()
-export class ExistsConstraint implements ValidatorConstraintInterface {
+export class UniqueConstraint implements ValidatorConstraintInterface {
     constructor(private prisma: PrismaService) { }
 
     async validate(value: any, args: ValidationArguments) {
@@ -34,11 +34,11 @@ export class ExistsConstraint implements ValidatorConstraintInterface {
         let where = {};
         where[property] = value;
 
-        return await p.count({ where }) ? true : false;
+        return !(await p.count({ where }) ? true : false);
     }
 
     defaultMessage(args: ValidationArguments) {
         const [constraintProperty]: (() => any)[] = args.constraints;
-        return `${constraintProperty} and ${args.property} does not match, does not exist`;
+        return `${constraintProperty} and ${args.property} does not match, is not unique`;
     }
 }

@@ -15,12 +15,12 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  email        String @unique
+  email        String  @unique
   firstname    String
   lastname     String
   password     String
-  id_card_path String
-  role         Role   @relation(fields: [role_id], references: [id])
+  id_card_path String?
+  role         Role    @relation(fields: [role_id], references: [id])
   role_id      Int
 
   reviews        Review[]

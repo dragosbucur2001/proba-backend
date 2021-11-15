@@ -17,8 +17,22 @@ export class UserService {
     return user;
   }
 
-  async create(data: CreateUserDto): Promise<User> {
-    return await this.prisma.user.create({ data })
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    delete createUserDto.confirmation_password;
+    let student_role_id = (await this.prisma.role.findFirst({
+      where: {
+        title: 'student'
+      }
+    })).id;
+
+    return await this.prisma.user.create({
+      data: {
+        ...createUserDto,
+        role: {
+          connect: { id: student_role_id }
+        }
+      },
+    });
   }
 
   async update(id: number, data: UpdateUserDto): Promise<User> {

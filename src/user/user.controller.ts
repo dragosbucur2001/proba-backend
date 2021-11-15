@@ -20,8 +20,6 @@ export class UserController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto): any {
-    // console.log(createUserDto);
-    return 1;
     return this.userService.create(createUserDto);
   }
 
