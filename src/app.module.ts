@@ -8,9 +8,10 @@ import { ReviewModule } from './review/review.module';
 import { SubjectModule } from './subject/subject.module';
 import { TutoringClassModule } from './tutoring-class/tutoring-class.module';
 import { ContactRequestsModule } from './contact-requests/contact-requests.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [UserModule, PrismaModule, AuthModule, ReviewModule, SubjectModule, TutoringClassModule, ContactRequestsModule],
+  imports: [UserModule, PrismaModule, AuthModule, ReviewModule, SubjectModule, TutoringClassModule, ContactRequestsModule, ProfileModule],
   controllers: [],
   providers: [ExistsConstraint, UniqueConstraint],
   exports: [ExistsConstraint, UniqueConstraint],

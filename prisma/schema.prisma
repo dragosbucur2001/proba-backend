@@ -23,9 +23,9 @@ model User {
   role         Role    @relation(fields: [role_id], references: [id])
   role_id      Int
 
-  reviews        Review[]
-  TutorinClasses TutoringClass[]
-  Enrollment     Enrollment[]
+  reviews         Review[]
+  tutoringClasses TutoringClass[]
+  enrolments      Enrolment[]
   @@map("users")
 }
 
@@ -59,7 +59,7 @@ model Subject {
 
   title String @unique
 
-  TutorinClasses TutoringClass[]
+  tutorinClasses TutoringClass[]
   @@map("subjects")
 }
 
@@ -87,11 +87,11 @@ model TutoringClass {
   subject     Subject @relation(fields: [subject_id], references: [id])
   subject_id  Int
 
-  Enrollment Enrollment[]
+  enrolments Enrolment[]
   @@map("tutoring_classes")
 }
 
-model Enrollment {
+model Enrolment {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -101,5 +101,6 @@ model Enrollment {
   tutoringClass     TutoringClass @relation(fields: [tutoring_class_id], references: [id])
   tutoring_class_id Int
 
-  @@map("enrollments")
+  @@unique([student_id, tutoring_class_id])
+  @@map("enrolments")
 }

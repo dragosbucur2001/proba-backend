@@ -55,7 +55,7 @@ CREATE TABLE `contact_requests` (
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `message` TEXT NOT NULL,
-    `is_resolved` BOOLEAN NOT NULL,
+    `is_resolved` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -65,7 +65,7 @@ CREATE TABLE `tutoring_classes` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
-    `description` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(500) NOT NULL,
     `teacher_id` INTEGER NOT NULL,
     `subject_id` INTEGER NOT NULL,
 
@@ -73,13 +73,14 @@ CREATE TABLE `tutoring_classes` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `enrollments` (
+CREATE TABLE `enrolments` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
     `student_id` INTEGER NOT NULL,
     `tutoring_class_id` INTEGER NOT NULL,
 
+    UNIQUE INDEX `enrolments_student_id_tutoring_class_id_key`(`student_id`, `tutoring_class_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -96,7 +97,7 @@ ALTER TABLE `tutoring_classes` ADD CONSTRAINT `tutoring_classes_teacher_id_fkey`
 ALTER TABLE `tutoring_classes` ADD CONSTRAINT `tutoring_classes_subject_id_fkey` FOREIGN KEY (`subject_id`) REFERENCES `subjects`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `enrollments` ADD CONSTRAINT `enrollments_student_id_fkey` FOREIGN KEY (`student_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `enrolments` ADD CONSTRAINT `enrolments_student_id_fkey` FOREIGN KEY (`student_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `enrollments` ADD CONSTRAINT `enrollments_tutoring_class_id_fkey` FOREIGN KEY (`tutoring_class_id`) REFERENCES `tutoring_classes`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `enrolments` ADD CONSTRAINT `enrolments_tutoring_class_id_fkey` FOREIGN KEY (`tutoring_class_id`) REFERENCES `tutoring_classes`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
