@@ -8,19 +8,21 @@ import * as fs from 'fs';
 dotenv.config();
 async function bootstrap() {
   
+  
+  let app = null;
 if (process.env.APPSTATE == "prod") {
     
   const keyFile  = fs.readFileSync(__dirname + '/cert.key');
   const certFile = fs.readFileSync(__dirname + '/cert.pem');
 
-  const app = await NestFactory.create(AppModule, {
+  app = await NestFactory.create(AppModule, {
     httpsOptions: {
       key: keyFile,
       cert: certFile,
     }});
 
 } else {
-    const app = await NestFactory.create(AppModule);
+    app = await NestFactory.create(AppModule);
 }
 
   
