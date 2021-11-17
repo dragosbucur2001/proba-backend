@@ -19,7 +19,7 @@ export class AuthController {
     @Auth()
     async register(
         @Body() createUserDto: CreateUserDto,
-        @Param('title', new ParseEnumPipe(Role)) title: Role
+        @Param('title') title: Role
     ): Promise<ResponseUserDto> {
         return new ResponseUserDto(await this.authService.register(createUserDto, title));
     }
