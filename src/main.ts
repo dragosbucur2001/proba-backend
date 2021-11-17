@@ -12,8 +12,8 @@ async function bootstrap() {
   let app = null;
 if (process.env.APPSTATE == "prod") {
     
-  const keyFile  = fs.readFileSync(__dirname + '/cert.key');
-  const certFile = fs.readFileSync(__dirname + '/cert.pem');
+  const keyFile  = fs.readFileSync('/etc/ssl/cloudflare/private/cloudflare_prvkey_lsacbucuresti.ro.pem');
+  const certFile = fs.readFileSync('/etc/ssl/cloudflare/certs/cloudflare_lsacbucuresti.ro.pem');
 
   app = await NestFactory.create(AppModule, {
     httpsOptions: {
