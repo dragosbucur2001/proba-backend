@@ -8,7 +8,7 @@ import * as fs from 'fs';
 dotenv.config();
 async function bootstrap() {
   
-if (process.dotenv.APPSTATE == "prod") {
+if (process.env.APPSTATE == "prod") {
     
   const keyFile  = fs.readFileSync(__dirname + '/cert.key');
   const certFile = fs.readFileSync(__dirname + '/cert.pem');
