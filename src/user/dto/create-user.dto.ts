@@ -8,7 +8,6 @@ import { Unique } from "src/validation-rules/unique.rule";
 export class CreateUserDto implements Partial<User> {
     @IsEmail()
     @Trim()
-    @Unique(CreateUserDto, u => u.email)
     email: string;
 
     @IsString()

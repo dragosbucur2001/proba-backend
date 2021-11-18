@@ -17,6 +17,8 @@ export class AuthService {
     ) { }
 
     async login(loginUserDto: LoginUserDto, token: string) {
+        await this.validateToken(token);
+
         const { email, password } = loginUserDto;
         let user = await this.prisma.user.findFirst({
             where: {
@@ -49,18 +51,39 @@ export class AuthService {
     }
 
     async register(createUserDto: CreateUserDto, token: string) {
+        await this.validateToken(token);
+
+        let user = await this.prisma.user.findUnique({
+            where: {
+                email_rookie_id: {
+                    email: createUserDto.email,
+                    rookie_id: (await this.prisma.rookie.findUnique({ where: { token } })).id
+                }
+            }
+        })
+        if (user)
+            throw new HttpException("Exista deja un user cu acest email", HttpStatus.BAD_REQUEST);
+
         let { role } = createUserDto;
         delete createUserDto.role;
 
         switch (role) {
             case Role.TEACHER:
-                if (createUserDto.email.match(/(.+)@microsoft.com$/))
+                if (!createUserDto.email.match(/(.+)@microsoft.com$/)) {
+                    throw new HttpException("Email address does not match expected format for role " + role + ". Teacher emails should end in @microsoft.com", HttpStatus.BAD_REQUEST);
+                } else {
                     break;
+                }
             case Role.STUDENT:
-                if (createUserDto.email.match(/(.+)@stud.upb.com$/))
+                if (!createUserDto.email.match(/(.+)@stud.upb.ro$/)) {
+                    throw new HttpException("Email address does not match expected format for role " + role + ". Student emails should end in @stud.upb.ro", HttpStatus.BAD_REQUEST);
+                } else {
                     break;
+                }
+            case Role.ADMIN:
+                throw new HttpException("Fuck off", HttpStatus.I_AM_A_TEAPOT);
             default:
-                throw new HttpException("Email address does not match expected format for role " + createUserDto.role, HttpStatus.BAD_REQUEST);
+                throw new HttpException("Email address does not match expected format for role " + role, HttpStatus.BAD_REQUEST);
         }
 
         delete createUserDto.confirmation_password;
@@ -81,5 +104,11 @@ export class AuthService {
                 },
             },
         });
+    }
+
+    private async validateToken(token: string): Promise<void> {
+        let rookie = await this.prisma.rookie.findUnique({ where: { token } });
+        if (!rookie)
+            throw new HttpException('Boboc token nu este valid, asigura-te ca ai copiat tokenul corect, si ca tokenul este introduc in campul boboc-token in header. Daca problema continua contacteaza-ti mentorul.', HttpStatus.I_AM_A_TEAPOT);
     }
 }

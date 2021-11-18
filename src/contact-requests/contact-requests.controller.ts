@@ -15,24 +15,27 @@ export class ContactRequestsController {
   ) { }
 
   @Get()
-  // @Auth(Role.ADMIN)
+  @Auth(Role.ADMIN)
   findAll() {
     return this.contactRequestsService.findAll();
   }
 
   @Get(':id')
-  // @Auth(Role.ADMIN)
+  @Auth(Role.ADMIN)
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.contactRequestsService.findOne(id);
   }
 
   @Post()
-  create(
+  async create(
     @Body() createContactRequestDto: CreateContactRequestDto,
     @RookieToken() token,
   ) {
-    // return 1;
-    return this.contactRequestsService.create(createContactRequestDto, token);
+    let contact = await this.contactRequestsService.create(createContactRequestDto, token);
+    delete contact.rookie_id;
+    delete contact.updated_at;
+    delete contact.created_at;
+    return contact;
   }
 
   @Patch(':id')

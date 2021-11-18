@@ -1,10 +1,13 @@
-import { PrismaClient } from '.prisma/client';
 import { createParamDecorator, ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 export const RookieToken = createParamDecorator(
-    (data: unknown, ctx: ExecutionContext) => {
+    async (data: unknown, ctx: ExecutionContext) => {
         const request = ctx.switchToHttp().getRequest();
-        return request.headers['boboc-token'];
+        let token = request.headers['boboc-token'];
+
+        if (!token)
+            throw new HttpException('Tokenul de boboc nu a fost gasit, asigura-te ca ai introdus tokenul in campul boboc-token din header', HttpStatus.I_AM_A_TEAPOT);
+
+        return token;
     },
 );

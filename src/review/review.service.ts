@@ -10,7 +10,21 @@ export class ReviewService {
   constructor(private prisma: PrismaService) { }
 
   async findAll() {
-    return this.prisma.review.findMany();
+    return this.prisma.review.findMany({
+      select: {
+        id: true,
+        message: true,
+        user: {
+          select: {
+            firstname: true,
+            lastname: true,
+            role: {
+              select: { title: true }
+            }
+          }
+        }
+      }
+    });
   }
 
   async findOne(id: number) {

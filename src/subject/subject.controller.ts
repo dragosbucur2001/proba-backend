@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { Auth } from 'src/decorators/auth.decorator';
 import { Role } from 'src/auth/roles.enum';
 
-@Controller('subject')
+@Controller('subjects')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) { }
 
@@ -15,11 +15,12 @@ export class SubjectController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.subjectService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.subjectService.findOne(id);
   }
 
   @Post()
+  @Auth(Role.ADMIN)
   create(@Body() createSubjectDto: CreateSubjectDto) {
     return this.subjectService.create(createSubjectDto);
   }

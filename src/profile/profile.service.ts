@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Role } from 'src/auth/roles.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 
@@ -25,7 +24,21 @@ export class ProfileService {
     }
 
     async getMyTutoringClasses(user) {
-        return this.prisma.tutoringClass.findMany({ where: { teacher_id: user.id } });
+        return this.prisma.tutoringClass.findMany({
+            select: {
+                id: true,
+                description: true,
+                teacher: {
+                    select: {
+                        email: true,
+                        firstname: true,
+                        lastname: true,
+                    }
+                },
+                subject: { select: { title: true, } },
+            },
+            where: { teacher_id: user.id }
+        });
     }
 
     async getMyEnrolments(user) {
@@ -37,7 +50,9 @@ export class ProfileService {
                     },
                 },
             },
-            include: {
+            select: {
+                id: true,
+                description: true,
                 teacher: {
                     select: {
                         firstname: true,
@@ -49,7 +64,7 @@ export class ProfileService {
                         title: true,
                     },
                 },
-            },
+            }
         });
     }
 

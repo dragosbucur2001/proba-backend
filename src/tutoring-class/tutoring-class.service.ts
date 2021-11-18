@@ -10,7 +10,12 @@ export class TutoringClassService {
 
   findAll(token: string) {
     return this.prisma.tutoringClass.findMany({
-      include: {
+      where: {
+        rookie: { token },
+      },
+      select: {
+        id: true,
+        description: true,
         teacher: {
           select: {
             email: true,
@@ -24,13 +29,18 @@ export class TutoringClassService {
   }
 
   async findOne(id: number, token: string) {
-    let tutoringClass = await this.prisma.tutoringClass.findUnique({ where: { id } });
+    let tutoringClass = await this.prisma.tutoringClass.findUnique({ where: { id }, include: { rookie: true } });
     if (!tutoringClass)
       throw new HttpException("TutoringClass not found", HttpStatus.NOT_FOUND);
 
+    if (tutoringClass.rookie.token !== token)
+      throw new HttpException("Aceasta meditatie a fost creata de un alt boboc", HttpStatus.I_AM_A_TEAPOT);
+
     return this.prisma.tutoringClass.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        description: true,
         teacher: {
           select: {
             email: true,
@@ -39,11 +49,13 @@ export class TutoringClassService {
           }
         },
         subject: { select: { title: true, } },
-      },
+      }
     });
   }
 
   async create(createTutoringClassDto: CreateTutoringClassDto, user, token: string) {
+    await this.validateToken(token);
+
     let { subject_id, description } = createTutoringClassDto;
     let subject = await this.prisma.subject.findUnique({ where: { id: subject_id } });
     if (!subject)
@@ -102,5 +114,11 @@ export class TutoringClassService {
       throw new HttpException('User does not own this review', HttpStatus.FORBIDDEN);
 
     return this.prisma.tutoringClass.delete({ where: { id } });
+  }
+
+  private async validateToken(token: string): Promise<void> {
+    let rookie = await this.prisma.rookie.findUnique({ where: { token: token } });
+    if (!rookie)
+      throw new HttpException('Boboc token nu este valid, asigura-te ca ai copiat tokenul corect, si ca tokenul este introduc in campul boboc-token in header. Daca problema continua contacteaza-ti mentorul.', HttpStatus.I_AM_A_TEAPOT);
   }
 }

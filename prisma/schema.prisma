@@ -19,7 +19,6 @@ model User {
   firstname    String
   lastname     String
   password     String
-  id_card_path String?
   role         Role    @relation(fields: [role_id], references: [id])
   role_id      Int
   rookie       Rookie  @relation(fields: [rookie_id], references: [id])
@@ -118,7 +117,6 @@ model Rookie {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  name  String @unique
   token String @unique @default(uuid())
 
   users           User[]

@@ -8,11 +8,11 @@ export class SubjectService {
   constructor(private prisma: PrismaService) { }
 
   async findAll() {
-    return this.prisma.review.findMany();
+    return this.prisma.subject.findMany({ select: { id: true, title: true } });
   }
 
   async findOne(id: number) {
-    let subject = await this.prisma.subject.findUnique({ where: { id } });
+    let subject = await this.prisma.subject.findUnique({ where: { id }, select: { id: true, title: true } });
     if (!subject)
       throw new HttpException("Subject not found", HttpStatus.NOT_FOUND);
 

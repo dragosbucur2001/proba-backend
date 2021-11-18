@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { RookieToken } from 'src/decorators/rookie.decorator';
+import { Auth } from 'src/decorators/auth.decorator';
+import { Role } from 'src/auth/roles.enum';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -24,6 +25,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @Auth(Role.ADMIN)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -33,6 +35,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @Auth(Role.ADMIN)
   async remove(
     @Param('id') id: number,
     @RookieToken() token: string,

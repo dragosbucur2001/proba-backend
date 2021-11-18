@@ -39,6 +39,6 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
 
     defaultMessage(args: ValidationArguments) {
         const [constraintProperty]: (() => any)[] = args.constraints;
-        return `${constraintProperty} and ${args.property} does not match, is not unique`;
+        return `Exista deja o entitate cu aceeasi valoare ${args.property}`;
     }
 }

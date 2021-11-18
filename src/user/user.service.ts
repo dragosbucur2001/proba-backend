@@ -46,6 +46,6 @@ export class UserService {
   private async validateToken(token: string): Promise<void> {
     let rookie = await this.prisma.rookie.findUnique({ where: { token } });
     if (!rookie)
-      throw new HttpException('Rookie token not valid', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Boboc token nu este valid, asigura-te ca ai copiat tokenul corect, si ca tokenul este introduc in campul boboc-token in header. Daca problema continua contacteaza-ti mentorul.', HttpStatus.I_AM_A_TEAPOT);
   }
 }

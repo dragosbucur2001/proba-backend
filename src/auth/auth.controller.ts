@@ -18,7 +18,7 @@ export class AuthController {
         return this.authService.login(loginUserDto, token);
     }
 
-    @Post('register/:title')
+    @Post('register')
     async register(
         @Body() createUserDto: CreateUserDto,
         @RookieToken() token: string,
