@@ -83,8 +83,8 @@ export class AuthService {
 
         switch (role) {
             case Role.TEACHER:
-                if (!createUserDto.email.match(/(.+)@microsoft.com$/)) {
-                    throw new HttpException("Email address does not match expected format for role " + role + ". Teacher emails should end in @microsoft.com", HttpStatus.BAD_REQUEST);
+                if (!createUserDto.email.match(/(.+)@onmicrosoft.upb.ro$/)) {
+                    throw new HttpException("Email address does not match expected format for role " + role + ". Teacher emails should end in @onmicrosoft.upb.ro", HttpStatus.BAD_REQUEST);
                 } else {
                     break;
                 }

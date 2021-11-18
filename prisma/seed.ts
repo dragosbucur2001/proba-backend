@@ -38,7 +38,7 @@ async function main() {
 
     let teacher = await prisma.user.create({
         data: {
-            email: 'mihai@onmicrosoft.ro',
+            email: 'mihai@onmicrosoft.upb.ro',
             password: bcrypt.hashSync(process.env.TEACHER_PASS, process.env.PASS_SALT),
             firstname: 'Mihai',
             lastname: 'Profesorescu',
