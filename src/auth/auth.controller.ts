@@ -1,5 +1,5 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
-import { Auth } from 'src/decorators/auth.decorator';
+import { RookieToken } from 'src/decorators/rookie.decorator';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { LoginUserDto } from 'src/user/dto/login-user.dto';
 import { ResponseUserDto } from 'src/user/dto/response-user.dto';
@@ -11,16 +11,18 @@ export class AuthController {
     constructor(private authService: AuthService) { }
 
     @Post('login')
-    async login(@Body() loginUserDto: LoginUserDto) {
-        return this.authService.login(loginUserDto);
+    async login(
+        @Body() loginUserDto: LoginUserDto,
+        @RookieToken() token: string,
+    ) {
+        return this.authService.login(loginUserDto, token);
     }
 
     @Post('register/:title')
-    @Auth()
     async register(
         @Body() createUserDto: CreateUserDto,
-        @Param('title') title: Role
+        @RookieToken() token: string,
     ): Promise<ResponseUserDto> {
-        return new ResponseUserDto(await this.authService.register(createUserDto, title));
+        return new ResponseUserDto(await this.authService.register(createUserDto, token));
     }
 }

@@ -14,7 +14,11 @@ export class ReviewService {
   }
 
   async findOne(id: number) {
-    return this.prisma.review.findUnique({ where: { id } });
+    let review = await this.prisma.review.findFirst({ where: { id } });
+    if (!review)
+      throw new HttpException("Review does not exist", HttpStatus.BAD_REQUEST);
+
+    return review;
   }
 
   async create(createReviewDto: CreateReviewDto, user: User) {
@@ -23,16 +27,16 @@ export class ReviewService {
         ...createReviewDto,
         user: {
           connect: { id: user.id }
-        }
+        },
       },
     });
   }
 
-  async update(id: number, updateReviewDto: UpdateReviewDto, user) {
-    let match = await this.prisma.review.count({ where: { id, user_id: user.id } });
+  async update(id: number, updateReviewDto: UpdateReviewDto) {
+    let match = await this.prisma.review.count({ where: { id } });
 
     if (match === 0)
-      throw new HttpException("Review does not exist or is owned by somebody else", HttpStatus.BAD_REQUEST);
+      throw new HttpException("Review does not exist", HttpStatus.BAD_REQUEST);
 
     return this.prisma.review.update({
       where: { id },

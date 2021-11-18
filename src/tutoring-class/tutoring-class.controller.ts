@@ -5,19 +5,23 @@ import { UpdateTutoringClassDto } from './dto/update-tutoring-class.dto';
 import { User } from 'src/decorators/user.decorator';
 import { Auth } from 'src/decorators/auth.decorator';
 import { Role } from 'src/auth/roles.enum';
+import { RookieToken } from 'src/decorators/rookie.decorator';
 
 @Controller('tutoring-classes')
 export class TutoringClassController {
   constructor(private readonly tutoringClassService: TutoringClassService) { }
 
   @Get()
-  findAll() {
-    return this.tutoringClassService.findAll();
+  findAll(@RookieToken() token: string) {
+    return this.tutoringClassService.findAll(token);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.tutoringClassService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @RookieToken() token: string,
+  ) {
+    return this.tutoringClassService.findOne(id, token);
   }
 
   @Post()
@@ -25,8 +29,9 @@ export class TutoringClassController {
   create(
     @Body() createTutoringClassDto: CreateTutoringClassDto,
     @User() user,
+    @RookieToken() token: string,
   ) {
-    return this.tutoringClassService.create(createTutoringClassDto, user);
+    return this.tutoringClassService.create(createTutoringClassDto, user, token);
   }
 
   @Post(':id/enroll')
@@ -34,8 +39,9 @@ export class TutoringClassController {
   enroll(
     @Param('id', ParseIntPipe) id: number,
     @User() user,
+    @RookieToken() token: string,
   ) {
-    return this.tutoringClassService.enroll(id, user);
+    return this.tutoringClassService.enroll(id, user, token);
   }
 
   @Patch(':id')
@@ -44,16 +50,18 @@ export class TutoringClassController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTutoringClassDto: UpdateTutoringClassDto,
     @User() user,
+    @RookieToken() token: string,
   ) {
-    return this.tutoringClassService.update(id, updateTutoringClassDto, user);
+    return this.tutoringClassService.update(id, updateTutoringClassDto, user, token);
   }
 
   @Delete(':id')
   @Auth(Role.TEACHER)
   remove(
     @Param('id') id: number,
-    @User() user
+    @User() user,
+    @RookieToken() token: string,
   ) {
-    return this.tutoringClassService.remove(id, user);
+    return this.tutoringClassService.remove(id, user, token);
   }
 }

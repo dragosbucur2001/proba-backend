@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
+import { RookieToken } from 'src/decorators/rookie.decorator';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -10,30 +11,32 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Get()
-  async findAll(): Promise<ResponseUserDto[]> {
-    return (await this.userService.findAll()).map(e => new ResponseUserDto(e));
+  async findAll(@RookieToken() token: string): Promise<ResponseUserDto[]> {
+    return (await this.userService.findAll(token)).map(e => new ResponseUserDto(e));
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<ResponseUserDto> {
-    return new ResponseUserDto(await this.userService.findOne(id));
-  }
-
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
-    return new ResponseUserDto(await this.userService.create(createUserDto));
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @RookieToken() token: string,
+  ): Promise<ResponseUserDto> {
+    return new ResponseUserDto(await this.userService.findOne(id, token));
   }
 
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto
+    @Body() updateUserDto: UpdateUserDto,
+    @RookieToken() token: string,
   ): Promise<ResponseUserDto> {
-    return new ResponseUserDto(await this.userService.update(id, updateUserDto));
+    return new ResponseUserDto(await this.userService.update(id, updateUserDto, token));
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<ResponseUserDto> {
-    return new ResponseUserDto(await this.userService.remove(id));
+  async remove(
+    @Param('id') id: number,
+    @RookieToken() token: string,
+  ): Promise<ResponseUserDto> {
+    return new ResponseUserDto(await this.userService.remove(id, token));
   }
 }

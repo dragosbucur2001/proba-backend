@@ -12,6 +12,7 @@ import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [UserModule, PrismaModule, AuthModule, ReviewModule, SubjectModule, TutoringClassModule, ContactRequestsModule, ProfileModule],
+  // imports: [ContactRequestsModule],
   controllers: [],
   providers: [ExistsConstraint, UniqueConstraint],
   exports: [ExistsConstraint, UniqueConstraint],

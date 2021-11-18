@@ -4,6 +4,8 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { User } from 'src/decorators/user.decorator';
 import { Auth } from 'src/decorators/auth.decorator';
+import { RookieToken } from 'src/decorators/rookie.decorator';
+import { Role } from 'src/auth/roles.enum';
 
 @Controller('reviews')
 export class ReviewController {
@@ -20,26 +22,28 @@ export class ReviewController {
   }
 
   @Post()
-  @Auth()
-  async create(@Body() createReviewDto: CreateReviewDto, @User() user) {
+  @Auth(Role.ADMIN)
+  async create(
+    @Body() createReviewDto: CreateReviewDto,
+    @User() user,
+  ) {
     return this.reviewService.create(createReviewDto, user);
   }
 
   @Patch(':id')
-  @Auth()
+  @Auth(Role.ADMIN)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateReviewDto: UpdateReviewDto,
-    @User() user
   ) {
-    return this.reviewService.update(id, updateReviewDto, user);
+    return this.reviewService.update(id, updateReviewDto);
   }
 
   @Delete(':id')
-  @Auth()
+  @Auth(Role.ADMIN)
   async remove(
     @Param('id', ParseIntPipe) id: number,
-    @User() user
+    @User() user,
   ) {
     return this.reviewService.remove(id, user);
   }

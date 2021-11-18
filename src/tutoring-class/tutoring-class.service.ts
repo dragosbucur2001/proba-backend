@@ -8,7 +8,7 @@ import { UpdateTutoringClassDto } from './dto/update-tutoring-class.dto';
 export class TutoringClassService {
   constructor(private prisma: PrismaService) { }
 
-  findAll() {
+  findAll(token: string) {
     return this.prisma.tutoringClass.findMany({
       include: {
         teacher: {
@@ -18,16 +18,12 @@ export class TutoringClassService {
             lastname: true,
           }
         },
-        subject: {
-          select: {
-            title: true,
-          }
-        },
+        subject: { select: { title: true, } },
       }
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, token: string) {
     let tutoringClass = await this.prisma.tutoringClass.findUnique({ where: { id } });
     if (!tutoringClass)
       throw new HttpException("TutoringClass not found", HttpStatus.NOT_FOUND);
@@ -42,38 +38,32 @@ export class TutoringClassService {
             lastname: true,
           }
         },
-        subject: {
-          select: {
-            title: true,
-          }
-        },
+        subject: { select: { title: true, } },
       },
     });
   }
 
-  async create(createTutoringClassDto: CreateTutoringClassDto, user) {
-    let { subject_id } = createTutoringClassDto;
+  async create(createTutoringClassDto: CreateTutoringClassDto, user, token: string) {
+    let { subject_id, description } = createTutoringClassDto;
     let subject = await this.prisma.subject.findUnique({ where: { id: subject_id } });
     if (!subject)
       throw new HttpException("Subject does not exist", HttpStatus.BAD_REQUEST);
 
     return this.prisma.tutoringClass.create({
       data: {
-        ...createTutoringClassDto,
-        teacher_id: user.id
+        description,
+        teacher: { connect: { id: user.id } },
+        subject: { connect: { id: subject_id } },
+        rookie: { connect: { token } },
       },
     });
   }
 
-  async enroll(id: number, user) {
+  async enroll(id: number, user, token: string) {
     let tutoringClass = await this.prisma.tutoringClass.findUnique({
       where: { id },
       include: {
-        enrolments: {
-          where: {
-            student_id: user.id
-          },
-        },
+        enrolments: { where: { student_id: user.id } },
       },
     });
 
@@ -91,7 +81,7 @@ export class TutoringClassService {
     });
   }
 
-  async update(id: number, updateTutoringClassDto: UpdateTutoringClassDto, user) {
+  async update(id: number, updateTutoringClassDto: UpdateTutoringClassDto, user, token: string) {
     let match = await this.prisma.tutoringClass.count({ where: { id, teacher_id: user.id } });
 
     if (match === 0)
@@ -103,7 +93,7 @@ export class TutoringClassService {
     });
   }
 
-  async remove(id: number, user) {
+  async remove(id: number, user, token: string) {
     let tutoringClass = await this.prisma.tutoringClass.findUnique({ where: { id } })
     if (!tutoringClass)
       throw new HttpException('Review not found', HttpStatus.NOT_FOUND);

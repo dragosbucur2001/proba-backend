@@ -16,11 +16,12 @@ export class AuthService {
         private jwtService: JwtService
     ) { }
 
-    async login(loginUserDto: LoginUserDto) {
+    async login(loginUserDto: LoginUserDto, token: string) {
         const { email, password } = loginUserDto;
-        let user = await this.prisma.user.findUnique({
+        let user = await this.prisma.user.findFirst({
             where: {
                 email,
+                rookie: { token },
             },
             include: {
                 role: {
@@ -31,8 +32,6 @@ export class AuthService {
             },
         });
 
-        console.log(user == null ? false : !bcrypt.compareSync(password, user.password));
-
         if (user == null ? true : !bcrypt.compareSync(password, user.password))
             throw new HttpException('Wrong credentials', HttpStatus.BAD_REQUEST);
 
@@ -42,14 +41,18 @@ export class AuthService {
                 user: {
                     id: user.id,
                     email: user.email,
-                    role: user.role
+                    role: user.role,
                 }
-            })
+            }),
+            'role': user.role,
         };
     }
 
-    async register(createUserDto: CreateUserDto, title: Role) {
-        switch (title) {
+    async register(createUserDto: CreateUserDto, token: string) {
+        let { role } = createUserDto;
+        delete createUserDto.role;
+
+        switch (role) {
             case Role.TEACHER:
                 if (createUserDto.email.match(/(.+)@microsoft.com$/))
                     break;
@@ -57,12 +60,13 @@ export class AuthService {
                 if (createUserDto.email.match(/(.+)@stud.upb.com$/))
                     break;
             default:
-                throw new HttpException("Email address does not match expected format", HttpStatus.BAD_REQUEST);
+                throw new HttpException("Email address does not match expected format for role " + createUserDto.role, HttpStatus.BAD_REQUEST);
         }
 
         delete createUserDto.confirmation_password;
+
         let student_role_id = (await this.prisma.role.findFirst({
-            where: { title }
+            where: { title: role }
         })).id;
         createUserDto.password = bcrypt.hashSync(createUserDto.password, process.env.PASS_SALT);
 
@@ -71,7 +75,10 @@ export class AuthService {
                 ...createUserDto,
                 role: {
                     connect: { id: student_role_id }
-                }
+                },
+                rookie: {
+                    connect: { token },
+                },
             },
         });
     }

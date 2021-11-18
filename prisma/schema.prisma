@@ -15,17 +15,21 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  email        String  @unique
+  email        String
   firstname    String
   lastname     String
   password     String
   id_card_path String?
   role         Role    @relation(fields: [role_id], references: [id])
   role_id      Int
+  rookie       Rookie  @relation(fields: [rookie_id], references: [id])
+  rookie_id    Int
 
   reviews         Review[]
   tutoringClasses TutoringClass[]
   enrolments      Enrolment[]
+
+  @@unique([email, rookie_id])
   @@map("users")
 }
 
@@ -72,6 +76,8 @@ model ContactRequest {
   email       String
   message     String  @db.Text
   is_resolved Boolean @default(false)
+  rookie      Rookie  @relation(fields: [rookie_id], references: [id])
+  rookie_id   Int
 
   @@map("contact_requests")
 }
@@ -86,6 +92,8 @@ model TutoringClass {
   teacher_id  Int
   subject     Subject @relation(fields: [subject_id], references: [id])
   subject_id  Int
+  rookie      Rookie  @relation(fields: [rookie_id], references: [id])
+  rookie_id   Int
 
   enrolments Enrolment[]
   @@map("tutoring_classes")
@@ -103,4 +111,20 @@ model Enrolment {
 
   @@unique([student_id, tutoring_class_id])
   @@map("enrolments")
+}
+
+model Rookie {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  name  String @unique
+  token String @unique @default(uuid())
+
+  users           User[]
+  contactRequests ContactRequest[]
+  tutoringClasses TutoringClass[]
+
+  @@index([token])
+  @@map("rookies")
 }
