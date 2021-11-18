@@ -1,15 +1,16 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as helmet from 'helmet';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, INestApplication, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 dotenv.config();
 
 async function bootstrap() {
-  let app = null;
+  let app: INestApplication = null;
 
   if (process.env.APPSTATE == "prod") {
     const keyFile = fs.readFileSync('/etc/ssl/cloudflare/private/cloudflare_prvkey_lsacbucuresti.ro.pem');

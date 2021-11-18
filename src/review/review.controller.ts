@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -6,8 +6,10 @@ import { User } from 'src/decorators/user.decorator';
 import { Auth } from 'src/decorators/auth.decorator';
 import { RookieToken } from 'src/decorators/rookie.decorator';
 import { Role } from 'src/auth/roles.enum';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('reviews')
+@UseGuards(ThrottlerGuard)
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) { }
 

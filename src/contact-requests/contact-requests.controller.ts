@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Role } from 'src/auth/roles.enum';
 import { Auth } from 'src/decorators/auth.decorator';
 import { RookieToken } from 'src/decorators/rookie.decorator';
@@ -8,6 +9,7 @@ import { CreateContactRequestDto } from './dto/create-contact-request.dto';
 import { UpdateContactRequestDto } from './dto/update-contact-request.dto';
 
 @Controller('contact-requests')
+@UseGuards(ThrottlerGuard)
 export class ContactRequestsController {
   constructor(
     private readonly contactRequestsService: ContactRequestsService,

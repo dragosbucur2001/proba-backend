@@ -21,6 +21,17 @@ export class AuthService {
 
         const { email, password } = loginUserDto;
         let user = await this.prisma.user.findFirst({
+            where: { email },
+            include: {
+                role: {
+                    select: {
+                        title: true,
+                    },
+                },
+            },
+        });
+
+        let userByRookie = await this.prisma.user.findFirst({
             where: {
                 email,
                 rookie: { token },
@@ -34,8 +45,11 @@ export class AuthService {
             },
         });
 
-        if (user == null ? true : !bcrypt.compareSync(password, user.password))
+        if (!user ? true : !bcrypt.compareSync(password, user.password))
             throw new HttpException('Wrong credentials', HttpStatus.BAD_REQUEST);
+
+        if (!userByRookie ? true : !bcrypt.compareSync(password, user.password))
+            throw new HttpException('Userul este asociat cu alt boboc token, verifica daca ai tokenul in campul boboc-token din header', HttpStatus.I_AM_A_TEAPOT);
 
         return {
             'ttl': process.env.JWT_TTL,

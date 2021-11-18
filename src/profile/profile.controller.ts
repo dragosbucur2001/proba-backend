@@ -1,4 +1,5 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Patch, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Patch, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { Role } from 'src/auth/roles.enum';
 import { Auth } from 'src/decorators/auth.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -9,6 +10,7 @@ import { ProfileService } from './profile.service';
 
 @Controller('my')
 @Auth()
+@UseGuards(ThrottlerGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProfileController {
     constructor(private profileService: ProfileService) { }
