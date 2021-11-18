@@ -5,28 +5,26 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
+
 dotenv.config();
+
 async function bootstrap() {
-  
-  
   let app = null;
-if (process.env.APPSTATE == "prod") {
-    
-  const keyFile  = fs.readFileSync('/etc/ssl/cloudflare/private/cloudflare_prvkey_lsacbucuresti.ro.pem');
-  const certFile = fs.readFileSync('/etc/ssl/cloudflare/certs/cloudflare_lsacbucuresti.ro.pem');
 
-  app = await NestFactory.create(AppModule, {
-    httpsOptions: {
-      key: keyFile,
-      cert: certFile,
-    }});
+  if (process.env.APPSTATE == "prod") {
+    const keyFile = fs.readFileSync('/etc/ssl/cloudflare/private/cloudflare_prvkey_lsacbucuresti.ro.pem');
+    const certFile = fs.readFileSync('/etc/ssl/cloudflare/certs/cloudflare_lsacbucuresti.ro.pem');
 
-} else {
+    app = await NestFactory.create(AppModule, {
+      httpsOptions: {
+        key: keyFile,
+        cert: certFile,
+      }
+    });
+  } else {
     app = await NestFactory.create(AppModule);
-}
+  }
 
-  
-  
   app.enableCors();
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({
