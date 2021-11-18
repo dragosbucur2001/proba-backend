@@ -36,7 +36,7 @@ export class TutoringClassController {
     return this.tutoringClassService.create(createTutoringClassDto, user, token);
   }
 
-  @Post(':id/enroll')
+  @Post(':id/enrol')
   @Auth(Role.STUDENT)
   enroll(
     @Param('id', ParseIntPipe) id: number,
